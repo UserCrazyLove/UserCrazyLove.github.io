@@ -5,6 +5,10 @@
 {% endcomment %}
 
 {% assign waline_config = site.comments.waline %}
+{% assign waline_required_meta = waline_config.required_meta %}
+{% if waline_required_meta == nil %}
+  {% assign waline_required_meta = "nick,mail" | split: "," %}
+{% endif %}
 
 <div id="waline"></div>
 
@@ -27,7 +31,7 @@
     uploadImage: {{ waline_config.upload_image | default: false }},
     login: {{ waline_config.login | default: 'enable' | jsonify }},
     wordLimit: {{ waline_config.word_limit | default: 0 }},
-    requiredMeta: {{ waline_config.required_meta | default: ['nick', 'mail'] | jsonify }},
+    requiredMeta: {{ waline_required_meta | jsonify }},
     reaction: {{ waline_config.reaction | default: false }},
     recaptchaV3Key: {{ waline_config.recaptcha_v3_key | default: '' | jsonify }}
   });

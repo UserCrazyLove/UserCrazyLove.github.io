@@ -10,6 +10,7 @@
 {% if waline_required_meta == nil %}
   {% assign waline_required_meta = "nick,mail" | split: "," %}
 {% endif %}
+{% assign waline_word_limit = waline_config.word_limit %}
 
 <div id="waline"></div>
 
@@ -29,9 +30,11 @@
     lang: {{ waline_config.lang | default: 'zh-CN' | jsonify }},
     visitor: {{ waline_config.visitor | default: false }},
     highlight: {{ waline_config.highlight | default: true }},
-    uploadImage: {{ waline_config.upload_image | default: false }},
+    imageUploader: {{ waline_config.upload_image | default: false }},
     login: {{ waline_config.login | default: 'enable' | jsonify }},
-    wordLimit: {{ waline_config.word_limit | default: 0 }},
+    {% if waline_word_limit and waline_word_limit > 0 %}
+    wordLimit: {{ waline_word_limit }},
+    {% endif %}
     requiredMeta: {{ waline_required_meta | jsonify }},
     reaction: {{ waline_config.reaction | default: false }},
     recaptchaV3Key: {{ waline_config.recaptcha_v3_key | default: '' | jsonify }}

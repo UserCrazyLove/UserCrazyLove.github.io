@@ -2,6 +2,7 @@
   Waline 评论区（支持 Vercel、LeanCloud、Deta Space、CloudBase 等多种后端部署方式）。
   请先部署服务端，再将 serverURL 填入 _config.yml 的 comments.waline.server_url。
   部署文档：https://waline.js.org/guide/get-started/
+  v3 客户端样式在 _includes/metadata-hook.html 中通过 waline.css 引入（否则界面图标与排版异常）。
 {% endcomment %}
 
 {% assign waline_config = site.comments.waline %}

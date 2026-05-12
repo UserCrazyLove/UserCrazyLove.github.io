@@ -1,4 +1,4 @@
-# Jekyll + Chirpy（GitHub Pages 用 GitHub Actions 构建）
+﻿# Jekyll + Chirpy（GitHub Pages 用 GitHub Actions 构建）
 # Giscus 的 repo_id、category_id 需在 https://giscus.app 生成后填入下方。
 
 theme: jekyll-theme-chirpy
@@ -11,7 +11,7 @@ tagline: 明辨是非，独立思考
 description: >-
   基于 Jekyll Chirpy 主题与 GitHub Pages 的个人博客。
 
-url: "https://usercrazylove.github.io"
+url: "https://userpvp.site"
 
 github:
   username: usercrazylove

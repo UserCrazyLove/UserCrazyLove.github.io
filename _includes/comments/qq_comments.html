@@ -1,0 +1,349 @@
+{% comment %}
+  QQ 号 + 本地存储评论区（替换 Cusdis）。
+  头像默认用 qlogo CDN；昵称通过 users.qzone.qq.com portrait JSONP 拉取（失败时显示「QQ 用户」）。
+  评论仅存访客本机 localStorage，换设备或清除数据后不可见；若要全站共享需自建后端或接入 Waline 等。
+{% endcomment %}
+<style>
+  #qq-comments-root.qq-comments {
+    max-width: 100%;
+    margin: 2.5rem 0 1rem;
+    padding: 1.25rem 1rem;
+    border: 1px solid var(--border-color, rgba(125, 125, 125, 0.25));
+    border-radius: 0.5rem;
+    background: var(--main-bg, transparent);
+    color: var(--text-color, inherit);
+  }
+  #qq-comments-root .qq-comments__title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 0 0.75rem;
+    color: var(--heading-color, inherit);
+  }
+  #qq-comments-root .qq-comments__hint {
+    font-size: 0.85rem;
+    opacity: 0.75;
+    margin: 0 0 1rem;
+    line-height: 1.45;
+  }
+  #qq-comments-root .qq-comments__form {
+    display: grid;
+    gap: 0.65rem;
+    margin-bottom: 1.25rem;
+  }
+  #qq-comments-root .qq-comments__row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  #qq-comments-root label {
+    font-size: 0.9rem;
+    min-width: 3.5rem;
+  }
+  #qq-comments-root input[type="text"],
+  #qq-comments-root textarea {
+    flex: 1 1 12rem;
+    min-width: 0;
+    padding: 0.45rem 0.55rem;
+    border-radius: 0.35rem;
+    border: 1px solid var(--border-color, rgba(125, 125, 125, 0.35));
+    background: var(--card-bg, var(--main-bg, #fff));
+    color: inherit;
+    font: inherit;
+  }
+  #qq-comments-root textarea {
+    min-height: 5rem;
+    resize: vertical;
+    width: 100%;
+  }
+  #qq-comments-root .qq-comments__btn {
+    padding: 0.45rem 1rem;
+    border-radius: 0.35rem;
+    border: none;
+    cursor: pointer;
+    font: inherit;
+    background: var(--btn-border-color, #2a6df4);
+    color: var(--btn-backtotop-color, #fff);
+  }
+  #qq-comments-root .qq-comments__btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+  #qq-comments-root .qq-comments__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  #qq-comments-root .qq-comments__item {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color, rgba(125, 125, 125, 0.2));
+  }
+  #qq-comments-root .qq-comments__item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+  #qq-comments-root .qq-comments__avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: var(--sidebar-bg, #eee);
+  }
+  #qq-comments-root .qq-comments__meta {
+    font-size: 0.8rem;
+    opacity: 0.8;
+    margin-bottom: 0.25rem;
+  }
+  #qq-comments-root .qq-comments__nick {
+    font-weight: 600;
+    margin-right: 0.35rem;
+  }
+  #qq-comments-root .qq-comments__body {
+    white-space: pre-wrap;
+    word-break: break-word;
+    line-height: 1.5;
+  }
+  #qq-comments-root .qq-comments__err {
+    color: #c62828;
+    font-size: 0.85rem;
+    margin: 0;
+  }
+</style>
+<script>
+(function () {
+  var PAGE_KEY = {{ page.id | default: page.url | jsonify }};
+  var STORAGE_PREFIX = 'qq_comments:';
+
+  function $(sel, root) {
+    return (root || document).querySelector(sel);
+  }
+
+  function avatarUrl(qq) {
+    return 'https://q1.qlogo.cn/g?b=qq&nk=' + encodeURIComponent(qq) + '&s=100';
+  }
+
+  function portraitScriptUrl(qq) {
+    return (
+      'https://users.qzone.qq.com/fcg-bin/cgi_get_portrait.fcg?uins=' +
+      encodeURIComponent(qq)
+    );
+  }
+
+  function validQQ(s) {
+    return /^\d{5,12}$/.test(String(s).trim());
+  }
+
+  function storageKey() {
+    return STORAGE_PREFIX + PAGE_KEY;
+  }
+
+  function loadList() {
+    try {
+      var raw = localStorage.getItem(storageKey());
+      if (!raw) return [];
+      var arr = JSON.parse(raw);
+      return Array.isArray(arr) ? arr : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function saveList(list) {
+    localStorage.setItem(storageKey(), JSON.stringify(list));
+  }
+
+  function formatTime(ts) {
+    try {
+      var d = new Date(ts);
+      if (isNaN(d.getTime())) return '';
+      return d.toLocaleString('zh-CN', { hour12: false });
+    } catch (e) {
+      return '';
+    }
+  }
+
+  var footer = document.querySelector('footer');
+  if (!footer) return;
+
+  var root = document.createElement('section');
+  root.id = 'qq-comments-root';
+  root.className = 'qq-comments';
+  root.setAttribute('lang', 'zh-CN');
+  root.innerHTML =
+    '<h2 class="qq-comments__title">评论区</h2>' +
+    '<p class="qq-comments__hint">填写 QQ 号与评论内容；昵称由 QQ 空间接口拉取（若失败则显示「QQ 用户」）。' +
+    '评论仅保存在当前浏览器本机，其他访客与设备不会看到；需要全站可见请自建评论服务。</p>' +
+    '<form class="qq-comments__form" id="qq-comments-form">' +
+    '<div class="qq-comments__row"><label for="qq-comments-qq">QQ</label>' +
+    '<input id="qq-comments-qq" name="qq" type="text" inputmode="numeric" autocomplete="username" placeholder="5–12 位数字" maxlength="12" /></div>' +
+    '<div class="qq-comments__row" style="align-items:flex-start"><label for="qq-comments-text">内容</label>' +
+    '<textarea id="qq-comments-text" name="text" maxlength="2000" placeholder="想说的话…"></textarea></div>' +
+    '<p class="qq-comments__err" id="qq-comments-err" hidden></p>' +
+    '<button type="submit" class="qq-comments__btn" id="qq-comments-submit">发表评论</button>' +
+    '</form>' +
+    '<ul class="qq-comments__list" id="qq-comments-list"></ul>';
+
+  footer.insertAdjacentElement('beforebegin', root);
+
+  var form = $('#qq-comments-form', root);
+  var inpQQ = $('#qq-comments-qq', root);
+  var inpText = $('#qq-comments-text', root);
+  var btn = $('#qq-comments-submit', root);
+  var err = $('#qq-comments-err', root);
+  var listEl = $('#qq-comments-list', root);
+
+  var jsonpQueue = [];
+  var jsonpBusy = false;
+
+  function runNextJsonp() {
+    if (jsonpBusy || jsonpQueue.length === 0) return;
+    jsonpBusy = true;
+    var job = jsonpQueue[0];
+    var prev = window.portraitCallBack;
+    var script = document.createElement('script');
+    script.async = true;
+    script.src = job.url;
+    function finish() {
+      jsonpBusy = false;
+      jsonpQueue.shift();
+      runNextJsonp();
+    }
+    window.portraitCallBack = function (data) {
+      try {
+        job.resolve(data);
+      } finally {
+        window.portraitCallBack = prev;
+        if (script.parentNode) document.head.removeChild(script);
+        finish();
+      }
+    };
+    script.onerror = function () {
+      try {
+        job.reject(new Error('load'));
+      } finally {
+        window.portraitCallBack = prev;
+        if (script.parentNode) document.head.removeChild(script);
+        finish();
+      }
+    };
+    document.head.appendChild(script);
+  }
+
+  function fetchPortraitNick(qq) {
+    return new Promise(function (resolve) {
+      jsonpQueue.push({
+        url: portraitScriptUrl(qq),
+        resolve: function (data) {
+          var nick = '';
+          try {
+            var row = null;
+            if (data && typeof data === 'object' && !Array.isArray(data)) {
+              row = data[String(qq)] || data[qq];
+            }
+            if (Array.isArray(row) && row.length > 6 && row[6] != null && row[6] !== '') {
+              nick = String(row[6]);
+            }
+          } catch (e) {}
+          resolve(nick || '');
+        },
+        reject: function () {
+          resolve('');
+        }
+      });
+      runNextJsonp();
+    });
+  }
+
+  function render() {
+    var items = loadList();
+    listEl.innerHTML = '';
+    if (items.length === 0) {
+      var li = document.createElement('li');
+      li.className = 'qq-comments__item';
+      li.style.border = 'none';
+      li.textContent = '还没有评论，来抢沙发吧。';
+      li.style.opacity = '0.75';
+      listEl.appendChild(li);
+      return;
+    }
+    items
+      .slice()
+      .reverse()
+      .forEach(function (c) {
+        var li = document.createElement('li');
+        li.className = 'qq-comments__item';
+        var qq = String(c.qq || '');
+        var nick = c.nick || 'QQ 用户';
+        var img = document.createElement('img');
+        img.className = 'qq-comments__avatar';
+        img.alt = '';
+        img.loading = 'lazy';
+        img.referrerPolicy = 'no-referrer';
+        img.src = c.avatar || avatarUrl(qq);
+        var wrap = document.createElement('div');
+        wrap.innerHTML =
+          '<div class="qq-comments__meta"><span class="qq-comments__nick"></span>' +
+          '<span class="qq-comments__qq"></span> · <time></time></div>' +
+          '<div class="qq-comments__body"></div>';
+        wrap.querySelector('.qq-comments__nick').textContent = nick;
+        wrap.querySelector('.qq-comments__qq').textContent = 'QQ ' + qq;
+        var timeEl = wrap.querySelector('time');
+        timeEl.textContent = formatTime(c.ts);
+        wrap.querySelector('.qq-comments__body').textContent = c.text || '';
+        li.appendChild(img);
+        li.appendChild(wrap);
+        listEl.appendChild(li);
+      });
+  }
+
+  function showError(msg) {
+    if (!msg) {
+      err.hidden = true;
+      err.textContent = '';
+      return;
+    }
+    err.hidden = false;
+    err.textContent = msg;
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    showError('');
+    var qq = String(inpQQ.value).trim();
+    var text = String(inpText.value).trim();
+    if (!validQQ(qq)) {
+      showError('请输入有效的 QQ 号（5–12 位数字）。');
+      return;
+    }
+    if (!text) {
+      showError('请填写评论内容。');
+      return;
+    }
+    btn.disabled = true;
+    fetchPortraitNick(qq).then(function (nick) {
+      var entry = {
+        qq: qq,
+        nick: nick || 'QQ 用户',
+        text: text,
+        ts: Date.now(),
+        avatar: avatarUrl(qq)
+      };
+      var list = loadList();
+      list.push(entry);
+      saveList(list);
+      inpText.value = '';
+      render();
+      btn.disabled = false;
+    });
+  });
+
+  render();
+})();
+</script>

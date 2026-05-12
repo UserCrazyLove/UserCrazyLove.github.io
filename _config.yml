@@ -38,13 +38,8 @@ analytics:
 theme_mode:
 
 comments:
-  # Cusdis：读者无需注册即可评论；默认「先审后发」，在 https://cusdis.com/dashboard 审核。
-  provider: cusdis
-  cusdis:
-    # App ID 须与 https://cusdis.com/dashboard 嵌入代码里 data-app-id="…" 引号内一致（多为长随机串，不是站点标题）
-    app_id: '6547999d-31f6-46db-b2b7-9bec652b0977'
-    # 自建实例时填写根 URL，不要末尾斜杠；用官方托管可省略
-    # host: 'https://cusdis.com'
+  # QQ 号评论区：见 _includes/comments/qq_comments.html（本地 localStorage，非 Cusdis）
+  provider: qq_comments
 
 pwa:
   enabled: true

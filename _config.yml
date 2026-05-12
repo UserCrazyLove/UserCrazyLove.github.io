@@ -7,7 +7,7 @@ lang: zh-CN
 timezone: Asia/Shanghai
 
 title: UserPvp的小窝
-tagline: 记录学习与思考
+tagline: 明辨是非，独立思考
 description: >-
   基于 Jekyll Chirpy 主题与 GitHub Pages 的个人博客。
 
@@ -26,7 +26,7 @@ social:
     - https://github.com/usercrazylove
 
 # 个人头像配置
-avatar: https://avatars.githubusercontent.com/u/61895636?v=4
+avatar: https://avatars.githubusercontent.com/u/61895636
 
 webmaster_verifications:
   google:

@@ -1,6 +1,4 @@
 ﻿# Jekyll + Chirpy（GitHub Pages 用 GitHub Actions 构建）
-# 评论：Chirpy 内置 giscus / utterances / disqus。Giscus、Utterances 均需 GitHub 登录才能发言。
-# 免登录评论已改为 Cusdis（见 comments 一节）；若改回 Giscus，把 provider 改回 giscus 并取消注释 giscus 配置。
 
 theme: jekyll-theme-chirpy
 
@@ -43,20 +41,10 @@ comments:
   # Cusdis：读者无需注册即可评论；默认「先审后发」，在 https://cusdis.com/dashboard 审核。
   provider: cusdis
   cusdis:
-    app_id: 'Pang' # Cusdis App ID
+    # App ID 须与 https://cusdis.com/dashboard 嵌入代码里 data-app-id="…" 引号内一致（多为长随机串，不是站点标题）
+    app_id: '6547999d-31f6-46db-b2b7-9bec652b0977'
     # 自建实例时填写根 URL，不要末尾斜杠；用官方托管可省略
     # host: 'https://cusdis.com'
-  # 若仍使用 Giscus（需 GitHub 账号评论），可改 provider: giscus 并启用下面一段：
-  # giscus:
-  #   repo: usercrazylove/usercrazylove.github.io
-  #   repo_id: R_kgDOSa3kig
-  #   category: Announcements
-  #   category_id: DIC_kwDOSa3kis4C81JC
-  #   mapping: pathname
-  #   strict: 0
-  #   input_position: bottom
-  #   lang: zh-CN
-  #   reactions_enabled: 1
 
 pwa:
   enabled: true

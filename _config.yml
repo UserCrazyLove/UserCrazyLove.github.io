@@ -6,7 +6,7 @@ theme: jekyll-theme-chirpy
 lang: zh-CN
 timezone: Asia/Shanghai
 
-title: 我的个人博客
+title: UserPvp的小窝
 tagline: 记录学习与思考
 description: >-
   基于 Jekyll Chirpy 主题与 GitHub Pages 的个人博客。
@@ -20,8 +20,8 @@ twitter:
   username:
 
 social:
-  name: usercrazylove
-  email: weige3395481738@qq.com
+  name: UserPvp
+  email: ymw133king@gmail.com
   links:
     - https://github.com/usercrazylove
 

@@ -1,0 +1,34 @@
+{% comment %}
+  Waline 评论区（支持 Vercel、LeanCloud、Deta Space、CloudBase 等多种后端部署方式）。
+  请先部署服务端，再将 serverURL 填入 _config.yml 的 comments.waline.server_url。
+  部署文档：https://waline.js.org/guide/get-started/
+{% endcomment %}
+
+{% assign waline_config = site.comments.waline %}
+
+<div id="waline"></div>
+
+<script type="module">
+  import { init } from 'https://unpkg.com/@waline/client@3/dist/waline.js';
+
+  var pageKey = (document.querySelector('meta[name="page-key"]') || {}).content || window.location.pathname;
+
+  init({
+    el: '#waline',
+    serverURL: {{ waline_config.server_url | jsonify }},
+    path: pageKey,
+    dark: 'auto',
+    placeholder: {{ waline_config.placeholder | default: '说说你此刻的想法…' | jsonify }},
+    avatar: {{ waline_config.avatar | default: 'monsterid' | jsonify }},
+    pageSize: {{ waline_config.page_size | default: 10 }},
+    lang: {{ waline_config.lang | default: 'zh-CN' | jsonify }},
+    visitor: {{ waline_config.visitor | default: false }},
+    highlight: {{ waline_config.highlight | default: true }},
+    uploadImage: {{ waline_config.upload_image | default: false }},
+    login: {{ waline_config.login | default: 'enable' | jsonify }},
+    wordLimit: {{ waline_config.word_limit | default: 0 }},
+    requiredMeta: {{ waline_config.required_meta | default: ['nick', 'mail'] | jsonify }},
+    reaction: {{ waline_config.reaction | default: false }},
+    recaptchaV3Key: {{ waline_config.recaptcha_v3_key | default: '' | jsonify }}
+  });
+</script>

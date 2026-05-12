@@ -38,8 +38,23 @@ analytics:
 theme_mode:
 
 comments:
-  # QQ 号评论区：见 _includes/comments/qq_comments.html（本地 localStorage，非 Cusdis）
-  provider: qq_comments
+  # Waline 评论区：见 _includes/comments/waline.html
+  provider: waline
+  # 请先部署 Waline 服务端拿到 serverURL，再填入下方
+  waline:
+    server_url: https://shuju-six.vercel.app
+    placeholder: 说说你此刻的想法…
+    avatar: monsterid        # 头像类型：mp, identicon, monsterid, wavatar, retro, robohash, hide
+    page_size: 10            # 每页评论数
+    lang: zh-CN              # 语言
+    visitor: false           # 是否开启文章阅读量统计
+    highlight: true          # 代码高亮
+    upload_image: false      # 是否开启图片上传
+    login: enable            # 社交登录：enable, disable, force
+    word_limit: 0            # 评论字数限制，0 为不限制
+    required_meta: [nick, mail]  # 必填项：[nick], [mail], [nick, mail]
+    reaction: false          # 文章反应（表情反馈）
+    recaptcha_v3_key: ''     # Google reCAPTCHA v3 site key
 
 pwa:
   enabled: true

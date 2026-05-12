@@ -51,7 +51,8 @@ comments:
     highlight: true          # 代码高亮
     upload_image: false      # 是否开启图片上传
     login: enable            # 社交登录：enable, disable, force
-    word_limit: 0            # 评论字数限制，0 为不限制
+    # 正整数 = 最大字数；不写或 0 表示不限制（由 waline.html 省略 wordLimit 选项）
+    word_limit: 0
     required_meta: [nick, mail]  # 必填项：[nick], [mail], [nick, mail]
     reaction: false          # 文章反应（表情反馈）
     recaptcha_v3_key: ''     # Google reCAPTCHA v3 site key

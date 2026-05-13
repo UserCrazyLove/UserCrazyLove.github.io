@@ -46,5 +46,23 @@
     #waline .wl-content {
       color: var(--waline-text-color, #333);
     }
+
+    /* 侧栏底部居中对齐：GitHub 图标 + 暗色/亮色切换 */
+    #sidebar .sidebar-bottom {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    #sidebar .sidebar-bottom .mode-toggle {
+      margin-top: 0.5rem;
+    }
+
+    #sidebar .sidebar-bottom > * {
+      width: 100%;
+      text-align: center;
+    }
   </style>
 {% endif %}

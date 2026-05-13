@@ -42,7 +42,7 @@ comments:
   provider: waline
   # 请先部署 Waline 服务端拿到 serverURL，再填入下方
   waline:
-    server_url: https://shuju-six.vercel.app
+    server_url: https://web.userpvp.site
     placeholder: 说说你此刻的想法…
     avatar: monsterid        # 头像类型：mp, identicon, monsterid, wavatar, retro, robohash, hide
     page_size: 10            # 每页评论数
@@ -56,6 +56,7 @@ comments:
     required_meta: [nick, mail]  # 必填项：[nick], [mail], [nick, mail]
     reaction: false          # 文章反应（表情反馈）
     recaptcha_v3_key: ''     # Google reCAPTCHA v3 site key
+    no_rss: true              # 隐藏 Waline 底部「订阅本文/本站评论」RSS 链接
 
 pwa:
   enabled: true

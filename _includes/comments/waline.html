@@ -37,6 +37,7 @@
     {% endif %}
     requiredMeta: {{ waline_required_meta | jsonify }},
     reaction: {{ waline_config.reaction | default: false }},
-    recaptchaV3Key: {{ waline_config.recaptcha_v3_key | default: '' | jsonify }}
+    recaptchaV3Key: {{ waline_config.recaptcha_v3_key | default: '' | jsonify }},
+    noRss: {{ waline_config.no_rss | default: false | jsonify }}
   });
 </script>

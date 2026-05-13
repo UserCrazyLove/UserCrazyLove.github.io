@@ -1,7 +1,2 @@
 # The contact options.
-
-- type: github
-  icon: "fab fa-github"
-
-- type: twitter
-  icon: "fa-brands fa-x-twitter"
+# 已禁用所有社交图标

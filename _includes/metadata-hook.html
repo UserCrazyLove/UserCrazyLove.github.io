@@ -61,24 +61,5 @@
       display: none !important;
     }
 
-    /* 隐藏评论区 Markdown 指南 */
-    #waline .wl-info {
-      display: none !important;
-    }
   </style>
-  <script>
-    (function () {
-      var observer = new MutationObserver(function () {
-        var waline = document.getElementById('waline');
-        if (!waline) return;
-        var all = waline.querySelectorAll('*');
-        for (var i = 0; i < all.length; i++) {
-          if (/Markdown/i.test(all[i].childNodes[0] && all[i].childNodes[0].nodeValue || '')) {
-            all[i].style.display = 'none';
-          }
-        }
-      });
-      observer.observe(document.body, { childList: true, subtree: true });
-    })();
-  </script>
 {% endif %}

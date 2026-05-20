@@ -60,5 +60,12 @@
     #waline .wl-sort {
       display: none !important;
     }
+
+    /* 隐藏评论区 Markdown 指南 */
+    #waline .wl-header + .wl-editor + .wl-guide,
+    #waline .wl-footer .wl-guide,
+    #waline .wl-guide {
+      display: none !important;
+    }
   </style>
 {% endif %}
